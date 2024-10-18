@@ -9,5 +9,12 @@ namespace KooliProjekt.Data
             : base(options)
         {
         }
+
+        public DbSet<BuildingPanels> BuildingPanels { get; set; }
+        public DbSet<Building> Building { get; set; }
+        public DbSet<Material> Material { get; set; }
+        public DbSet<PanelMaterial> PanelMaterial { get; set; }
+        public DbSet<Panel> Panel { get; set; }
+        public DbSet<Service> Service { get; set; }
     }
 }
