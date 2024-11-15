@@ -1,31 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using KooliProjekt.Data;
+using KooliProjekt.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using KooliProjekt.Data;
 
 namespace KooliProjekt.Controllers
 {
-    public class ServicesController : Controller
+    public class servicesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IServicesService _serviceService;
 
-        public ServicesController(ApplicationDbContext context)
+        public servicesController(IServicesService serviceService)
         {
-            _context = context;
+            _serviceService = serviceService;
         }
 
-        // GET: Services
+        // GET: services
         public async Task<IActionResult> Index(int page = 1)
         {
-            var applicationDbContext = _context.Service.Include(s => s.Building);
-            return View(await applicationDbContext.GetPagedAsync(page,2));
+            var data = await _serviceService.List(page, 5);
+
+            return View(data);
         }
 
-        // GET: Services/Details/5
+        // GET: services/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,9 +29,7 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var service = await _context.Service
-                .Include(s => s.Building)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var service = await _serviceService.Get(id.Value);
             if (service == null)
             {
                 return NotFound();
@@ -44,31 +38,28 @@ namespace KooliProjekt.Controllers
             return View(service);
         }
 
-        // GET: Services/Create
+        // GET: services/Create
         public IActionResult Create()
         {
-            ViewData["BuildingId"] = new SelectList(_context.Building, "Id", "Id");
             return View();
         }
 
-        // POST: Services/Create
+        // POST: services/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,BuildingId,Price")] Service service)
+        public async Task<IActionResult> Create([Bind("Id,Title")] Service service)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(service);
-                await _context.SaveChangesAsync();
+                await _serviceService.Save(service);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["BuildingId"] = new SelectList(_context.Building, "Id", "Id", service.BuildingId);
             return View(service);
         }
 
-        // GET: Services/Edit/5
+        // GET: services/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -76,21 +67,20 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var service = await _context.Service.FindAsync(id);
+            var service = await _serviceService.Get(id.Value);
             if (service == null)
             {
                 return NotFound();
             }
-            ViewData["BuildingId"] = new SelectList(_context.Building, "Id", "Id", service.BuildingId);
             return View(service);
         }
 
-        // POST: Services/Edit/5
+        // POST: services/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,BuildingId,Price")] Service service)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title")] Service service)
         {
             if (id != service.Id)
             {
@@ -99,29 +89,13 @@ namespace KooliProjekt.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(service);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ServiceExists(service.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                await _serviceService.Save(service);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["BuildingId"] = new SelectList(_context.Building, "Id", "Id", service.BuildingId);
             return View(service);
         }
 
-        // GET: Services/Delete/5
+        // GET: services/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -129,9 +103,7 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var service = await _context.Service
-                .Include(s => s.Building)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var service = await _serviceService.Get(id.Value);
             if (service == null)
             {
                 return NotFound();
@@ -140,24 +112,14 @@ namespace KooliProjekt.Controllers
             return View(service);
         }
 
-        // POST: Services/Delete/5
+        // POST: services/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var service = await _context.Service.FindAsync(id);
-            if (service != null)
-            {
-                _context.Service.Remove(service);
-            }
+            await _serviceService.Delete(id);
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool ServiceExists(int id)
-        {
-            return _context.Service.Any(e => e.Id == id);
         }
     }
 }

@@ -1,28 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using KooliProjekt.Data;
+using KooliProjekt.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using KooliProjekt.Data;
 
 namespace KooliProjekt.Controllers
 {
     public class BuildingPanelsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IBuildingPanelsService _BuildingPanelService;
 
-        public BuildingPanelsController(ApplicationDbContext context)
+        public BuildingPanelsController(IBuildingPanelsService BuildingPanelService)
         {
-            _context = context;
+            _BuildingPanelService = BuildingPanelService;
         }
 
         // GET: BuildingPanels
         public async Task<IActionResult> Index(int page = 1)
         {
-            var applicationDbContext = _context.BuildingPanels.Include(b => b.Building).Include(b => b.Panel);
-            return View(await applicationDbContext.GetPagedAsync(page, 2));
+            var data = await _BuildingPanelService.List(page, 5);
+
+            return View(data);
         }
 
         // GET: BuildingPanels/Details/5
@@ -33,23 +29,18 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var buildingPanels = await _context.BuildingPanels
-                .Include(b => b.Building)
-                .Include(b => b.Panel)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (buildingPanels == null)
+            var BuildingPanel = await _BuildingPanelService.Get(id.Value);
+            if (BuildingPanel == null)
             {
                 return NotFound();
             }
 
-            return View(buildingPanels);
+            return View(BuildingPanel);
         }
 
         // GET: BuildingPanels/Create
         public IActionResult Create()
         {
-            ViewData["BuildingId"] = new SelectList(_context.Building, "Id", "Id");
-            ViewData["PanelId"] = new SelectList(_context.Panel, "Id", "Id");
             return View();
         }
 
@@ -58,17 +49,14 @@ namespace KooliProjekt.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Amount,BuildingId,PanelId")] BuildingPanels buildingPanels)
+        public async Task<IActionResult> Create([Bind("Id,Title")] BuildingPanels BuildingPanel)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(buildingPanels);
-                await _context.SaveChangesAsync();
+                await _BuildingPanelService.Save(BuildingPanel);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["BuildingId"] = new SelectList(_context.Building, "Id", "Id", buildingPanels.BuildingId);
-            ViewData["PanelId"] = new SelectList(_context.Panel, "Id", "Id", buildingPanels.PanelId);
-            return View(buildingPanels);
+            return View(BuildingPanel);
         }
 
         // GET: BuildingPanels/Edit/5
@@ -79,14 +67,12 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var buildingPanels = await _context.BuildingPanels.FindAsync(id);
-            if (buildingPanels == null)
+            var BuildingPanel = await _BuildingPanelService.Get(id.Value);
+            if (BuildingPanel == null)
             {
                 return NotFound();
             }
-            ViewData["BuildingId"] = new SelectList(_context.Building, "Id", "Id", buildingPanels.BuildingId);
-            ViewData["PanelId"] = new SelectList(_context.Panel, "Id", "Id", buildingPanels.PanelId);
-            return View(buildingPanels);
+            return View(BuildingPanel);
         }
 
         // POST: BuildingPanels/Edit/5
@@ -94,36 +80,19 @@ namespace KooliProjekt.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Amount,BuildingId,PanelId")] BuildingPanels buildingPanels)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title")] BuildingPanels BuildingPanel)
         {
-            if (id != buildingPanels.Id)
+            if (id != BuildingPanel.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(buildingPanels);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!BuildingPanelsExists(buildingPanels.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                await _BuildingPanelService.Save(BuildingPanel);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["BuildingId"] = new SelectList(_context.Building, "Id", "Id", buildingPanels.BuildingId);
-            ViewData["PanelId"] = new SelectList(_context.Panel, "Id", "Id", buildingPanels.PanelId);
-            return View(buildingPanels);
+            return View(BuildingPanel);
         }
 
         // GET: BuildingPanels/Delete/5
@@ -134,16 +103,13 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var buildingPanels = await _context.BuildingPanels
-                .Include(b => b.Building)
-                .Include(b => b.Panel)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (buildingPanels == null)
+            var BuildingPanel = await _BuildingPanelService.Get(id.Value);
+            if (BuildingPanel == null)
             {
                 return NotFound();
             }
 
-            return View(buildingPanels);
+            return View(BuildingPanel);
         }
 
         // POST: BuildingPanels/Delete/5
@@ -151,19 +117,9 @@ namespace KooliProjekt.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var buildingPanels = await _context.BuildingPanels.FindAsync(id);
-            if (buildingPanels != null)
-            {
-                _context.BuildingPanels.Remove(buildingPanels);
-            }
+            await _BuildingPanelService.Delete(id);
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool BuildingPanelsExists(int id)
-        {
-            return _context.BuildingPanels.Any(e => e.Id == id);
         }
     }
 }

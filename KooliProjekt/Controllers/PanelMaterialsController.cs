@@ -1,31 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using KooliProjekt.Data;
+using KooliProjekt.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using KooliProjekt.Data;
 
 namespace KooliProjekt.Controllers
 {
-    public class PanelMaterialsController : Controller
+    public class PanelsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IPanelsService _panelsService;
 
-        public PanelMaterialsController(ApplicationDbContext context)
+        public PanelsController(IPanelsService panelService)
         {
-            _context = context;
+            _panelsService = panelService;
         }
 
-        // GET: PanelMaterials
+        // GET: panels
         public async Task<IActionResult> Index(int page = 1)
         {
-            var applicationDbContext = _context.PanelMaterial.Include(p => p.Material).Include(p => p.Panel);
-            return View(await applicationDbContext.GetPagedAsync(page, 2));
+            var data = await _panelsService.List(page, 5);
+
+            return View(data);
         }
 
-        // GET: PanelMaterials/Details/5
+        // GET: panels/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,45 +29,37 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var panelMaterial = await _context.PanelMaterial
-                .Include(p => p.Material)
-                .Include(p => p.Panel)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (panelMaterial == null)
+            var panel = await _panelsService.Get(id.Value);
+            if (panel == null)
             {
                 return NotFound();
             }
 
-            return View(panelMaterial);
+            return View(panel);
         }
 
-        // GET: PanelMaterials/Create
+        // GET: panels/Create
         public IActionResult Create()
         {
-            ViewData["MaterialId"] = new SelectList(_context.Material, "Id", "Id");
-            ViewData["PanelId"] = new SelectList(_context.Panel, "Id", "Id");
             return View();
         }
 
-        // POST: PanelMaterials/Create
+        // POST: panels/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Amount,MaterialId,PanelId,UnitPrice,TotalPrice")] PanelMaterial panelMaterial)
+        public async Task<IActionResult> Create([Bind("Id,Title")] Panel panel)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(panelMaterial);
-                await _context.SaveChangesAsync();
+                await _panelsService.Save(panel);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["MaterialId"] = new SelectList(_context.Material, "Id", "Id", panelMaterial.MaterialId);
-            ViewData["PanelId"] = new SelectList(_context.Panel, "Id", "Id", panelMaterial.PanelId);
-            return View(panelMaterial);
+            return View(panel);
         }
 
-        // GET: PanelMaterials/Edit/5
+        // GET: panels/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -79,54 +67,35 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var panelMaterial = await _context.PanelMaterial.FindAsync(id);
-            if (panelMaterial == null)
+            var panel = await _panelsService.Get(id.Value);
+            if (panel == null)
             {
                 return NotFound();
             }
-            ViewData["MaterialId"] = new SelectList(_context.Material, "Id", "Id", panelMaterial.MaterialId);
-            ViewData["PanelId"] = new SelectList(_context.Panel, "Id", "Id", panelMaterial.PanelId);
-            return View(panelMaterial);
+            return View(panel);
         }
 
-        // POST: PanelMaterials/Edit/5
+        // POST: panels/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Amount,MaterialId,PanelId,UnitPrice,TotalPrice")] PanelMaterial panelMaterial)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title")] Panel panel)
         {
-            if (id != panelMaterial.Id)
+            if (id != panel.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(panelMaterial);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PanelMaterialExists(panelMaterial.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                await _panelsService.Save(panel);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["MaterialId"] = new SelectList(_context.Material, "Id", "Id", panelMaterial.MaterialId);
-            ViewData["PanelId"] = new SelectList(_context.Panel, "Id", "Id", panelMaterial.PanelId);
-            return View(panelMaterial);
+            return View(panel);
         }
 
-        // GET: PanelMaterials/Delete/5
+        // GET: panels/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -134,36 +103,23 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var panelMaterial = await _context.PanelMaterial
-                .Include(p => p.Material)
-                .Include(p => p.Panel)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (panelMaterial == null)
+            var panel = await _panelsService.Get(id.Value);
+            if (panel == null)
             {
                 return NotFound();
             }
 
-            return View(panelMaterial);
+            return View(panel);
         }
 
-        // POST: PanelMaterials/Delete/5
+        // POST: panels/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var panelMaterial = await _context.PanelMaterial.FindAsync(id);
-            if (panelMaterial != null)
-            {
-                _context.PanelMaterial.Remove(panelMaterial);
-            }
+            await _panelsService.Delete(id);
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool PanelMaterialExists(int id)
-        {
-            return _context.PanelMaterial.Any(e => e.Id == id);
         }
     }
 }

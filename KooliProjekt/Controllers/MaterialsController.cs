@@ -1,30 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using KooliProjekt.Data;
+using KooliProjekt.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using KooliProjekt.Data;
 
 namespace KooliProjekt.Controllers
 {
     public class MaterialsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly MaterialsService _materialsService;
 
-        public MaterialsController(ApplicationDbContext context)
+        public MaterialsController(MaterialsService materialService)
         {
-            _context = context;
+            _materialsService = materialService;
         }
 
-        // GET: Materials
+        // GET: materials
         public async Task<IActionResult> Index(int page = 1)
         {
-            return View(await _context.Material.GetPagedAsync(page, 2));
+            var data = await _materialsService.List(page, 5);
+
+            return View(data);
         }
 
-        // GET: Materials/Details/5
+        // GET: materials/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -32,8 +29,7 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var material = await _context.Material
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var material = await _materialsService.Get(id.Value);
             if (material == null)
             {
                 return NotFound();
@@ -42,29 +38,28 @@ namespace KooliProjekt.Controllers
             return View(material);
         }
 
-        // GET: Materials/Create
+        // GET: materials/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Materials/Create
+        // POST: materials/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,UnitPrice")] Material material)
+        public async Task<IActionResult> Create([Bind("Id,Title")] Material material)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(material);
-                await _context.SaveChangesAsync();
+                await _materialsService.Save(material);
                 return RedirectToAction(nameof(Index));
             }
             return View(material);
         }
 
-        // GET: Materials/Edit/5
+        // GET: materials/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -72,7 +67,7 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var material = await _context.Material.FindAsync(id);
+            var material = await _materialsService.Get(id.Value);
             if (material == null)
             {
                 return NotFound();
@@ -80,12 +75,12 @@ namespace KooliProjekt.Controllers
             return View(material);
         }
 
-        // POST: Materials/Edit/5
+        // POST: materials/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,UnitPrice")] Material material)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title")] Material material)
         {
             if (id != material.Id)
             {
@@ -94,28 +89,13 @@ namespace KooliProjekt.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(material);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!MaterialExists(material.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                await _materialsService.Save(material);
                 return RedirectToAction(nameof(Index));
             }
             return View(material);
         }
 
-        // GET: Materials/Delete/5
+        // GET: materials/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -123,8 +103,7 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var material = await _context.Material
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var material = await _materialsService.Get(id.Value);
             if (material == null)
             {
                 return NotFound();
@@ -133,24 +112,14 @@ namespace KooliProjekt.Controllers
             return View(material);
         }
 
-        // POST: Materials/Delete/5
+        // POST: materials/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var material = await _context.Material.FindAsync(id);
-            if (material != null)
-            {
-                _context.Material.Remove(material);
-            }
+            await _materialsService.Delete(id);
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool MaterialExists(int id)
-        {
-            return _context.Material.Any(e => e.Id == id);
         }
     }
 }
