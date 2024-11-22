@@ -8,7 +8,7 @@ namespace KooliProjekt.Controllers
     {
         private readonly IBuildingsService _buildingsService;
 
-        public BuildingsController(BuildingsService buildingService)
+        public BuildingsController(IBuildingsService buildingService)
         {
             _buildingsService = buildingService;
         }

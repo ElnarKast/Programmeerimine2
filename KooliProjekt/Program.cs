@@ -1,4 +1,5 @@
 using KooliProjekt.Data;
+using KooliProjekt.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +20,14 @@ namespace KooliProjekt
             builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddControllersWithViews();
+
+            builder.Services.AddScoped<IBuildingsService, BuildingsService>();
+            builder.Services.AddScoped<IBuildingPanelsService, BuildingPanelsService>();
+            builder.Services.AddScoped<IMaterialsService, MaterialsService>();
+            builder.Services.AddScoped<IPanelsService, PanelsService>();
+            builder.Services.AddScoped<IServicesService, ServicesService>();
+            builder.Services.AddScoped<IPanelMaterialsService, PanelMaterialsService>();
+
 
             var app = builder.Build();
 
