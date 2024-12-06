@@ -1,4 +1,5 @@
 ﻿using KooliProjekt.Data;
+using KooliProjekt.Search;
 using Microsoft.EntityFrameworkCore;
 
 namespace KooliProjekt.Services
@@ -12,38 +13,46 @@ namespace KooliProjekt.Services
             _context = context;
         }
 
-        public async Task<PagedResult<Building>> List(int page, int pageSize)
+        public async Task Delete(int id)
         {
-            return await _context.Building.GetPagedAsync(page, 5);
+            await _context.Building
+                .Where(list => list.Id == id)
+                .ExecuteDeleteAsync();
         }
 
         public async Task<Building> Get(int id)
         {
-            return await _context.Building.FirstOrDefaultAsync(m => m.Id == id);
+            return await _context.Building.FindAsync(id);
+        }
+
+        public async Task<PagedResult<Building>> List(int page, int pageSize, BuildingsSearch search = null)
+        {
+            var query = _context.Building.AsQueryable();
+
+            search = search ?? new BuildingsSearch();
+
+            if (!string.IsNullOrWhiteSpace(search.Keyword))
+            {
+                query = query.Where(list => list.Location.Contains(search.Keyword));
+            }
+
+            return await query
+                .OrderBy(list => list.Location)
+                .GetPagedAsync(page, pageSize);
         }
 
         public async Task Save(Building list)
         {
             if (list.Id == 0)
             {
-                _context.Add(list);
+                _context.Building.Add(list);
             }
             else
             {
-                _context.Update(list);
+                _context.Building.Update(list);
             }
 
             await _context.SaveChangesAsync();
-        }
-
-        public async Task Delete(int id)
-        {
-            var building = await _context.Building.FindAsync(id);
-            if (building != null)
-            {
-                _context.Building.Remove(building);
-                await _context.SaveChangesAsync();
-            }
         }
     }
 }

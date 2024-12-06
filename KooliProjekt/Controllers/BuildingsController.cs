@@ -1,4 +1,5 @@
 ﻿using KooliProjekt.Data;
+using KooliProjekt.Models;
 using KooliProjekt.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,11 +15,12 @@ namespace KooliProjekt.Controllers
         }
 
         // GET: buildings
-        public async Task<IActionResult> Index(int page = 1)
+        public async Task<IActionResult> Index(int page = 1, BuildingsIndexModel model = null)
         {
-            var data = await _buildingsService.List(page, 5);
+            model = model ?? new BuildingsIndexModel();
+            model.Data = await _buildingsService.List(page, 5, model.Search);
 
-            return View(data);
+            return View(model);
         }
 
         // GET: buildings/Details/5

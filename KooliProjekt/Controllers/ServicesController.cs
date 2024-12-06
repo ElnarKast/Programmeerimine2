@@ -1,24 +1,26 @@
 ﻿using KooliProjekt.Data;
+using KooliProjekt.Models;
 using KooliProjekt.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KooliProjekt.Controllers
 {
-    public class servicesController : Controller
+    public class ServicesController : Controller
     {
-        private readonly IServicesService _serviceService;
+        private readonly IServicesService _servicesService;
 
-        public servicesController(IServicesService serviceService)
+        public ServicesController(IServicesService ServiceService)
         {
-            _serviceService = serviceService;
+            _servicesService = ServiceService;
         }
 
         // GET: services
-        public async Task<IActionResult> Index(int page = 1)
+        public async Task<IActionResult> Index(int page = 1, ServicesIndexModel model = null)
         {
-            var data = await _serviceService.List(page, 5);
+            model = model ?? new ServicesIndexModel();
+            model.Data = await _servicesService.List(page, 5, model.Search);
 
-            return View(data);
+            return View(model);
         }
 
         // GET: services/Details/5
@@ -29,7 +31,7 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var service = await _serviceService.Get(id.Value);
+            var service = await _servicesService.Get(id.Value);
             if (service == null)
             {
                 return NotFound();
@@ -53,7 +55,7 @@ namespace KooliProjekt.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _serviceService.Save(service);
+                await _servicesService.Save(service);
                 return RedirectToAction(nameof(Index));
             }
             return View(service);
@@ -67,7 +69,7 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var service = await _serviceService.Get(id.Value);
+            var service = await _servicesService.Get(id.Value);
             if (service == null)
             {
                 return NotFound();
@@ -89,7 +91,7 @@ namespace KooliProjekt.Controllers
 
             if (ModelState.IsValid)
             {
-                await _serviceService.Save(service);
+                await _servicesService.Save(service);
                 return RedirectToAction(nameof(Index));
             }
             return View(service);
@@ -103,7 +105,7 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var service = await _serviceService.Get(id.Value);
+            var service = await _servicesService.Get(id.Value);
             if (service == null)
             {
                 return NotFound();
@@ -117,7 +119,7 @@ namespace KooliProjekt.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _serviceService.Delete(id);
+            await _servicesService.Delete(id);
 
             return RedirectToAction(nameof(Index));
         }
