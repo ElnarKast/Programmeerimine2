@@ -8,5 +8,6 @@
         public int BuildingId { get; set; }
 
         public double Price { get; set; }
+        public string Title { get; set; }
     }
 }

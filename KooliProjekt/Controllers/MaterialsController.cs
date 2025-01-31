@@ -8,10 +8,16 @@ namespace KooliProjekt.Controllers
     public class MaterialsController : Controller
     {
         private readonly MaterialsService _materialsService;
+        private IMaterialsService @object;
 
         public MaterialsController(MaterialsService materialService)
         {
             _materialsService = materialService;
+        }
+
+        public MaterialsController(IMaterialsService @object)
+        {
+            this.@object = @object;
         }
 
         // GET: materials

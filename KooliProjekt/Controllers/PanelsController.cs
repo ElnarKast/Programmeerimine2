@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace KooliProjekt.Controllers
 {
-    public class panelsController : Controller
+    public class PanelsController : Controller
     {
         private readonly IPanelsService _panelService;
 
-        public panelsController(IPanelsService panelService)
+        public PanelsController(IPanelsService panelService)
         {
             _panelService = panelService;
         }

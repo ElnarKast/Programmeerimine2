@@ -10,5 +10,6 @@
 
         public Panel Panel { get; set; }
         public int PanelId { get; set; }
+        public string Title { get; set; }
     }
 }

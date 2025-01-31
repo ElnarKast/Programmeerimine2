@@ -4,19 +4,19 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace KooliProjekt.Controllers
 {
-    public class PanelsController : Controller
+    public class PanelMaterialsController : Controller
     {
-        private readonly IPanelsService _panelsService;
+        private readonly IPanelMaterialsService _panelmaterialsService;
 
-        public PanelsController(IPanelsService panelService)
+        public PanelMaterialsController(IPanelMaterialsService PanelMaterialService)
         {
-            _panelsService = panelService;
+            _panelmaterialsService = PanelMaterialService;
         }
 
         // GET: panels
         public async Task<IActionResult> Index(int page = 1)
         {
-            var data = await _panelsService.List(page, 5);
+            var data = await _panelmaterialsService.List(page, 5);
 
             return View(data);
         }
@@ -29,37 +29,37 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var panel = await _panelsService.Get(id.Value);
-            if (panel == null)
+            var PanelMaterial = await _panelmaterialsService.Get(id.Value);
+            if (PanelMaterial == null)
             {
                 return NotFound();
             }
 
-            return View(panel);
+            return View(PanelMaterial);
         }
 
-        // GET: panels/Create
+        // GET: panelMaterials/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: panels/Create
+        // POST: panelMaterials/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title")] Panel panel)
+        public async Task<IActionResult> Create([Bind("Id,Title")] PanelMaterial PanelMaterial)
         {
             if (ModelState.IsValid)
             {
-                await _panelsService.Save(panel);
+                await _panelmaterialsService.Save(PanelMaterial);
                 return RedirectToAction(nameof(Index));
             }
-            return View(panel);
+            return View(PanelMaterial);
         }
 
-        // GET: panels/Edit/5
+        // GET: panelMaterials/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -67,35 +67,35 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var panel = await _panelsService.Get(id.Value);
-            if (panel == null)
+            var PanelMaterial = await _panelmaterialsService.Get(id.Value);
+            if (PanelMaterial == null)
             {
                 return NotFound();
             }
-            return View(panel);
+            return View(PanelMaterial);
         }
 
-        // POST: panels/Edit/5
+        // POST: panelMaterials/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title")] Panel panel)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title")] PanelMaterial PanelMaterial)
         {
-            if (id != panel.Id)
+            if (id != PanelMaterial.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                await _panelsService.Save(panel);
+                await _panelmaterialsService.Save(PanelMaterial);
                 return RedirectToAction(nameof(Index));
             }
-            return View(panel);
+            return View(PanelMaterial);
         }
 
-        // GET: panels/Delete/5
+        // GET: panelMaterials/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -103,21 +103,21 @@ namespace KooliProjekt.Controllers
                 return NotFound();
             }
 
-            var panel = await _panelsService.Get(id.Value);
-            if (panel == null)
+            var PanelMaterial = await _panelmaterialsService.Get(id.Value);
+            if (PanelMaterial == null)
             {
                 return NotFound();
             }
 
-            return View(panel);
+            return View(PanelMaterial);
         }
 
-        // POST: panels/Delete/5
+        // POST: panelMaterials/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _panelsService.Delete(id);
+            await _panelmaterialsService.Delete(id);
 
             return RedirectToAction(nameof(Index));
         }
