@@ -1,5 +1,6 @@
 ﻿using KooliProjekt.Controllers;
 using KooliProjekt.Data;
+using KooliProjekt.Models;
 using KooliProjekt.Services;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -47,6 +48,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
 
             // Act
             var result = await _controller.Index(page) as ViewResult;
+            var model = result.Model as BuildingsIndexModel;
 
             // Assert
             Assert.NotNull(result);
@@ -54,7 +56,7 @@ namespace KooliProjekt.UnitTests.ControllerTests
                 string.IsNullOrEmpty(result.ViewName) ||
                 result.ViewName == "Index"
             );
-            Assert.Equal(pagedResult, result.Model);
+            Assert.Equal(pagedResult, model.Data);
         }
 
         [Fact]
