@@ -4,30 +4,28 @@ using Xunit;
 
 namespace KooliProjekt.UnitTests.ServiceTests
 {
-    public class BuildingPanelsServiceTests : ServiceTestBase
-    public class BuildingPanelsTests : ServiceTestBase
+    public class MaterialsServiceTests : ServiceTestBase
     {
-        private readonly BuildingPanelsService _service;
+        private readonly MaterialsService _service;
 
-        public BuildingPanelsServiceTests()
-        public BuildingPanelsTests()
+        public MaterialsServiceTests()
         {
-            _service = new BuildingPanelsService(DbContext);
+            _service = new MaterialsService(DbContext);
         }
 
         [Fact]
         public async Task Delete_should_remove_existing_list()
         {
             // Arrange
-            var list = new BuildingPanels { Title = "Test" };
-            DbContext.BuildingPanels.Add(list);
+            var list = new Material { Title = "Test" };
+            DbContext.Material.Add(list);
             DbContext.SaveChanges();
 
             // Act
             await _service.Delete(list.Id);
 
             // Assert
-            var count = DbContext.BuildingPanels.Count();
+            var count = DbContext.Material.Count();
             Assert.Equal(0, count);
         }
 
@@ -41,7 +39,7 @@ namespace KooliProjekt.UnitTests.ServiceTests
             await _service.Delete(id);
 
             // Assert
-            var count = DbContext.BuildingPanels.Count();
+            var count = DbContext.Material.Count();
             Assert.Equal(0, count);
         }
     }
