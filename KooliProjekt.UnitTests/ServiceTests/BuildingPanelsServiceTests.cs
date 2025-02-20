@@ -5,12 +5,10 @@ using Xunit;
 namespace KooliProjekt.UnitTests.ServiceTests
 {
     public class BuildingPanelsServiceTests : ServiceTestBase
-    public class BuildingPanelsTests : ServiceTestBase
     {
         private readonly BuildingPanelsService _service;
 
         public BuildingPanelsServiceTests()
-        public BuildingPanelsTests()
         {
             _service = new BuildingPanelsService(DbContext);
         }
@@ -20,29 +18,29 @@ namespace KooliProjekt.UnitTests.ServiceTests
         {
             // Arrange
             var list = new BuildingPanels { Title = "Test" };
-            DbContext.BuildingPanels.Add(list);
+            DbContext.BuildingPanels.Add(list);  // Use the correct DbSet: BuildingPanels
             DbContext.SaveChanges();
 
             // Act
             await _service.Delete(list.Id);
 
             // Assert
-            var count = DbContext.BuildingPanels.Count();
+            var count = DbContext.BuildingPanels.Count();  // Correct DbSet: BuildingPanels
             Assert.Equal(0, count);
         }
 
         [Fact]
-        public async Task Delete_should_return_if_list_was_not_found()
+        public async Task Delete_should_not_remove_when_list_was_not_found()
         {
             // Arrange
-            var id = -100;
+            var id = -100;  // A non-existent ID
 
             // Act
             await _service.Delete(id);
 
             // Assert
-            var count = DbContext.BuildingPanels.Count();
-            Assert.Equal(0, count);
+            var count = DbContext.BuildingPanels.Count();  // Correct DbSet: BuildingPanels
+            Assert.Equal(0, count);  // No deletion should occur
         }
     }
 }

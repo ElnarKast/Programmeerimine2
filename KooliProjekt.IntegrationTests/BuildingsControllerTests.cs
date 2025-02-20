@@ -1,6 +1,8 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Linq;  // <-- This ensures LINQ methods like FirstOrDefault, Any work
 using KooliProjekt.Data;
 using KooliProjekt.IntegrationTests.Helpers;
 using Xunit;
@@ -68,6 +70,51 @@ namespace KooliProjekt.IntegrationTests
 
             // Assert
             response.EnsureSuccessStatusCode();
+        }
+
+        [Fact]
+        public async Task Create_should_save_new_list()
+        {
+            // Arrange
+            var formValues = new Dictionary<string, string>
+            {
+                { "Id", "0" },
+                { "Title", "Test Building" }
+            };
+
+            using var content = new FormUrlEncodedContent(formValues);
+
+            // Act
+            using var response = await _client.PostAsync("/Buildings/Create", content);
+
+            // Assert
+            Assert.True(
+                response.StatusCode == HttpStatusCode.Redirect ||
+                response.StatusCode == HttpStatusCode.MovedPermanently);
+
+            var building = _context.Building.FirstOrDefault();
+            Assert.NotNull(building);
+            Assert.NotEqual(0, building.Id);
+            Assert.Equal("Test Building", building.Title);
+        }
+
+        [Fact]
+        public async Task Create_should_not_save_invalid_new_list()
+        {
+            // Arrange
+            var formValues = new Dictionary<string, string>
+            {
+                { "Title", "" }
+            };
+
+            using var content = new FormUrlEncodedContent(formValues);
+
+            // Act
+            using var response = await _client.PostAsync("/Buildings/Create", content);
+
+            // Assert
+            response.EnsureSuccessStatusCode();
+            Assert.False(_context.Building.Any());
         }
     }
 }
