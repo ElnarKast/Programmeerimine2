@@ -1,0 +1,28 @@
+﻿<Window x:Class="WpfApp1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp1"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <!-- ListBox для отображения объектов -->
+        <ListBox Name="ObjectListBox" HorizontalAlignment="Left" Height="200" Margin="10,10,0,0" VerticalAlignment="Top" Width="760" />
+
+        <!-- Кнопка для загрузки данных -->
+        <Button Name="LoadButton" Content="Load Data" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Height="30" Margin="10,220,0,0" Click="LoadButton_Click"/>
+
+        <!-- Кнопка для добавления нового объекта -->
+        <Button Name="AddButton" Content="Add Object" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Height="30" Margin="120,220,0,0" Click="AddButton_Click"/>
+
+        <!-- Кнопка для удаления выбранного объекта -->
+        <Button Name="DeleteButton" Content="Delete Object" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Height="30" Margin="230,220,0,0" Click="DeleteButton_Click"/>
+
+        <!-- Кнопка для сохранения изменений -->
+        <Button Name="SaveButton" Content="Save Object" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Height="30" Margin="340,220,0,0" Click="SaveButton_Click"/>
+
+        <!-- TextBox для ввода имени объекта -->
+        <TextBox Name="ObjectNameTextBox" HorizontalAlignment="Left" Height="30" Margin="10,260,0,0" VerticalAlignment="Top" Width="760"/>
+    </Grid>
+</Window>
