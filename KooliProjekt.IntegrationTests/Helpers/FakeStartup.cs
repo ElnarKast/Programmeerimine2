@@ -1,6 +1,7 @@
 ﻿using System;
 using KooliProjekt.Controllers;
 using KooliProjekt.Data;
+using KooliProjekt.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -35,7 +36,12 @@ namespace KooliProjekt.IntegrationTests.Helpers
             services.AddControllersWithViews()
                     .AddApplicationPart(typeof(HomeController).Assembly);
 
-            //services.AddScoped<IFileClient, LocalFileClient>();
+            services.AddScoped<IBuildingsService, BuildingsService>();
+            services.AddScoped<IBuildingPanelsService, BuildingPanelsService>();
+            services.AddScoped<IMaterialsService, MaterialsService>();
+            services.AddScoped<IPanelsService, PanelsService>();
+            services.AddScoped<IServicesService, ServicesService>();
+            services.AddScoped<IPanelMaterialsService, PanelMaterialsService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -67,7 +73,8 @@ namespace KooliProjekt.IntegrationTests.Helpers
                     throw new Exception("LIVE SETTINGS IN TESTS!");
                 }
 
-                //EnsureDatabase(dbContext);
+                dbContext.Database.EnsureDeleted();
+                dbContext.Database.EnsureCreated();
             }
         }
 

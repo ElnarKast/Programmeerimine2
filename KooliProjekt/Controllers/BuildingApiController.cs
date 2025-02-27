@@ -6,13 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace KooliProjekt.Controllers
 {
-    [Route("api/TodoLists")]
+    [Route("api/Buildings")]
     [ApiController]
-    public class TodoListsApiController : ControllerBase
+    public class BuildingsApiController : ControllerBase
     {
         private readonly IBuildingsService _service;
 
-        public TodoListsApiController(IBuildingsService service)
+        public BuildingsApiController(IBuildingsService service)
         {
             _service = service;
         }

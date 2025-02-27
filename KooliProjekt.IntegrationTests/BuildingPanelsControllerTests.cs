@@ -57,11 +57,29 @@ namespace KooliProjekt.IntegrationTests
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
-        [Fact]
         public async Task Details_should_return_ok_when_list_was_found()
         {
             // Arrange
-            var list = new BuildingPanels { Title = "List 1" };
+            var building = new Building
+            {
+                Id = 1,  // Example Id or set according to your logic
+                Title = "Building A",  // Replace with actual properties of the Building model
+                Location = "123 Street"  // Example property, adjust based on your Building model
+            };
+
+            var panel = new Panel
+            {
+                Id = 1,  // Example Id or set according to your logic
+                Title = "Panel A"  // Replace with actual properties of the Panel model
+            };
+
+            var list = new BuildingPanels
+            {
+                Title = "List 1",
+                Building = building,
+                Panel = panel
+            };
+
             _context.BuildingPanels.Add(list);
             _context.SaveChanges();
 
