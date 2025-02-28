@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using KooliProjekt.Data;
 using KooliProjekt.IntegrationTests.Helpers;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
 namespace KooliProjekt.IntegrationTests
@@ -17,7 +18,8 @@ namespace KooliProjekt.IntegrationTests
 
         public MaterialControllerTests()
         {
-            _client = Factory.CreateClient();
+            var options = new WebApplicationFactoryClientOptions { AllowAutoRedirect = false };
+            _client = Factory.CreateClient(options);
             _context = (ApplicationDbContext)Factory.Services.GetService(typeof(ApplicationDbContext));
         }
 
@@ -27,7 +29,7 @@ namespace KooliProjekt.IntegrationTests
             // Arrange
 
             // Act
-            using var response = await _client.GetAsync("/Material");
+            using var response = await _client.GetAsync("/Materials");
 
             // Assert
             response.EnsureSuccessStatusCode();
@@ -39,7 +41,7 @@ namespace KooliProjekt.IntegrationTests
             // Arrange
 
             // Act
-            using var response = await _client.GetAsync("/Material/Details/100");
+            using var response = await _client.GetAsync("/Materials/Details/100");
 
             // Assert
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -51,7 +53,7 @@ namespace KooliProjekt.IntegrationTests
             // Arrange
 
             // Act
-            using var response = await _client.GetAsync("/Material/Details/");
+            using var response = await _client.GetAsync("/Materials/Details/");
 
             // Assert
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -66,7 +68,7 @@ namespace KooliProjekt.IntegrationTests
             _context.SaveChanges();
 
             // Act
-            using var response = await _client.GetAsync("/Material/Details/" + material.Id);
+            using var response = await _client.GetAsync("/Materials/Details/" + material.Id);
 
             // Assert
             response.EnsureSuccessStatusCode();
@@ -79,13 +81,15 @@ namespace KooliProjekt.IntegrationTests
             var formValues = new Dictionary<string, string>
             {
                 { "Id", "0" },
+                { "Name", "Name" },
+                { "UnitPrice", "0" },
                 { "Title", "Test Material" }
             };
 
             using var content = new FormUrlEncodedContent(formValues);
 
             // Act
-            using var response = await _client.PostAsync("/Material/Create", content);
+            using var response = await _client.PostAsync("/Materials/Create", content);
 
             // Assert
             Assert.True(
@@ -95,7 +99,7 @@ namespace KooliProjekt.IntegrationTests
             var material = _context.Material.FirstOrDefault(); // Renamed 'list' to 'material'
             Assert.NotNull(material);
             Assert.NotEqual(0, material.Id);
-            Assert.Equal("Test Material", material.Title);
+            Assert.Equal("Name", material.Name);
         }
 
         [Fact]
@@ -104,13 +108,13 @@ namespace KooliProjekt.IntegrationTests
             // Arrange
             var formValues = new Dictionary<string, string>
             {
-                { "Title", "" } // Invalid input
+                { "UnitPrice", "" } // Invalid input
             };
 
             using var content = new FormUrlEncodedContent(formValues);
 
             // Act
-            using var response = await _client.PostAsync("/Material/Create", content);
+            using var response = await _client.PostAsync("/Materials/Create", content);
 
             // Assert
             response.EnsureSuccessStatusCode();

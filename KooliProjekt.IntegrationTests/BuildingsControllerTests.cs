@@ -6,6 +6,8 @@ using System.Linq;  // <-- This ensures LINQ methods like FirstOrDefault, Any wo
 using KooliProjekt.Data;
 using KooliProjekt.IntegrationTests.Helpers;
 using Xunit;
+using System;
+using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace KooliProjekt.IntegrationTests
 {
@@ -17,7 +19,8 @@ namespace KooliProjekt.IntegrationTests
 
         public BuildingsControllerTests()
         {
-            _client = Factory.CreateClient();
+            var options = new WebApplicationFactoryClientOptions { AllowAutoRedirect = false };
+            _client = Factory.CreateClient(options);
             _context = (ApplicationDbContext)Factory.Services.GetService(typeof(ApplicationDbContext));
         }
 
@@ -73,7 +76,7 @@ namespace KooliProjekt.IntegrationTests
         }
 
         [Fact]
-        public async Task Create_should_save_new_list()
+        public async Task Create_should_save_new_building()
         {
             // Arrange
             var formValues = new Dictionary<string, string>
@@ -99,12 +102,14 @@ namespace KooliProjekt.IntegrationTests
         }
 
         [Fact]
-        public async Task Create_should_not_save_invalid_new_list()
+        public async Task Create_should_not_save_invalid_new_building()
         {
             // Arrange
             var formValues = new Dictionary<string, string>
             {
-                { "Title", "" }
+                { "UserId", "" },
+                { "Date", "" },
+                { "Location", "" }
             };
 
             using var content = new FormUrlEncodedContent(formValues);

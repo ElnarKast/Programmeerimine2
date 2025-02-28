@@ -6,6 +6,7 @@ using System.Linq;  // <-- Add this line
 using KooliProjekt.Data;
 using KooliProjekt.IntegrationTests.Helpers;
 using Xunit;
+using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace KooliProjekt.IntegrationTests
 {
@@ -17,7 +18,8 @@ namespace KooliProjekt.IntegrationTests
 
         public BuildingPanelsControllerTests()
         {
-            _client = Factory.CreateClient();
+            var options = new WebApplicationFactoryClientOptions { AllowAutoRedirect = false };
+            _client = Factory.CreateClient(options);
             _context = (ApplicationDbContext)Factory.Services.GetService(typeof(ApplicationDbContext));
         }
 
@@ -115,11 +117,11 @@ namespace KooliProjekt.IntegrationTests
         }
 
         [Fact]
-        public async Task Create_should_not_save_invalid_new_list()
+        public async Task Create_should_not_save_invalid_new_building_panel()
         {
             // Arrange
             var formValues = new Dictionary<string, string>();
-            formValues.Add("Title", "");
+            formValues.Add("Amount", "");
 
             using var content = new FormUrlEncodedContent(formValues);
 

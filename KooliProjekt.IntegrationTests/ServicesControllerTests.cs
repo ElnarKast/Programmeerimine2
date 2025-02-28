@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using KooliProjekt.Data;
 using KooliProjekt.IntegrationTests.Helpers;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
 namespace KooliProjekt.IntegrationTests
@@ -17,7 +18,8 @@ namespace KooliProjekt.IntegrationTests
 
         public ServicesControllerTests()
         {
-            _client = Factory.CreateClient();
+            var options = new WebApplicationFactoryClientOptions { AllowAutoRedirect = false };
+            _client = Factory.CreateClient(options);
             _context = (ApplicationDbContext)Factory.Services.GetService(typeof(ApplicationDbContext));
         }
 

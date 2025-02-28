@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography.X509Certificates;
 
 namespace KooliProjekt.Data
@@ -11,7 +12,8 @@ namespace KooliProjekt.Data
         public IdentityUser User { get; set; }
         public string UserId { get; set; }
 
-        public DateTime Date { get; set; }
+        [Required]
+        public DateTime? Date { get; set; }
 
         public string Location { get; set; }
         public string Title { get; set; }
