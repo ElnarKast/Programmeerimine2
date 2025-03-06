@@ -64,7 +64,7 @@ namespace KooliProjekt.IntegrationTests
         public async Task Details_should_return_ok_when_list_was_found()
         {
             // Arrange
-            var list = new Building { Title = "List 1" };
+            var list = new Building { Date = DateTime.Now, Title = "List 1" };
             _context.Building.Add(list);
             _context.SaveChanges();
 
@@ -82,7 +82,8 @@ namespace KooliProjekt.IntegrationTests
             var formValues = new Dictionary<string, string>
             {
                 { "Id", "0" },
-                { "Title", "Test Building" }
+                { "Date", "2024-12-01" },
+                { "Location", "Aruküla" }
             };
 
             using var content = new FormUrlEncodedContent(formValues);
@@ -98,7 +99,7 @@ namespace KooliProjekt.IntegrationTests
             var building = _context.Building.FirstOrDefault();
             Assert.NotNull(building);
             Assert.NotEqual(0, building.Id);
-            Assert.Equal("Test Building", building.Title);
+            Assert.Equal("Aruküla", building.Location);
         }
 
         [Fact]

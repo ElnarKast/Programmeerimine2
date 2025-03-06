@@ -95,18 +95,22 @@ namespace KooliProjekt.IntegrationTests
         [Fact]
         public async Task Create_should_not_save_invalid_new_panel()
         {
-            // Arrange
+            // Arrange: Prepare form values with invalid data (empty Title)
             var formValues = new Dictionary<string, string>();
-            formValues.Add("Title", "");  // Empty Title
+            //formValues.Add("Title", "");  // Empty Title, which should be invalid
 
             using var content = new FormUrlEncodedContent(formValues);
 
-            // Act
+            // Act: Post the form to create a new panel
             using var response = await _client.PostAsync("/Panels/Create", content);
 
-            // Assert
+            // Assert: 
+            // Check that the response is a redirection (302) or Moved Permanently
             response.EnsureSuccessStatusCode();
-            Assert.False(_context.Panel.Any());
+
+            // Ensure no new panel was added to the database
+            Assert.False(_context.Panel.Any(), "A new panel was added when the title was empty.");
         }
+
     }
 }

@@ -51,7 +51,7 @@ namespace KooliProjekt.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title")] Service service)
+        public async Task<IActionResult> Create(Service service)
         {
             if (ModelState.IsValid)
             {

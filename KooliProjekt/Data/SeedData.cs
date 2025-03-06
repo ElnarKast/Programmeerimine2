@@ -11,16 +11,25 @@ public static class SeedData
             return;
         }
 
-        var user = new IdentityUser
-        {
-            UserName = "newuser@example.com",
-            Email = "newuser@example.com",
-            NormalizedUserName = "NEWUSER@EXAMPLE.COM", // Optional but recommended for case-insensitivity
-            NormalizedEmail = "NEWUSER@EXAMPLE.COM" // Optional but recommended
-        };
+        IdentityUser user;
 
-        // Create the user with a password
-        userManager.CreateAsync(user, "Password123!").Wait();
+        if (context.Users.Count() == 0)
+        {
+            user = new IdentityUser
+            {
+                UserName = "newuser@example.com",
+                Email = "newuser@example.com",
+                NormalizedUserName = "NEWUSER@EXAMPLE.COM", // Optional but recommended for case-insensitivity
+                NormalizedEmail = "NEWUSER@EXAMPLE.COM" // Optional but recommended
+            };
+
+            // Create the user with a password
+            userManager.CreateAsync(user, "Password123!").Wait();
+        }
+        else
+        {
+            user = context.Users.First();
+        }
 
         var material1 = new Material();
         material1.Name = "Iron";

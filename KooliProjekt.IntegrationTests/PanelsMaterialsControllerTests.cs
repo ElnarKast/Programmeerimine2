@@ -57,7 +57,16 @@ namespace KooliProjekt.IntegrationTests
         public async Task Details_should_return_ok_when_panel_material_found()
         {
             // Arrange
-            var panelMaterial = new PanelMaterial { Title = "Material 1" };  // Changed 'list' to 'panelMaterial'
+            var panel = new Panel
+            {
+                Title = "Test Panel"  // Provide necessary properties for Panel
+            };
+            var material = new Material
+            {
+                Title = "Test Material",  // Provide necessary properties for Material
+                UnitPrice = 10.0m       // Provide a unit price or any other needed properties
+            };
+            var panelMaterial = new PanelMaterial { Title = "Material 1", Panel = panel, Material =  material };  // Changed 'list' to 'panelMaterial'
             _context.PanelMaterial.Add(panelMaterial);
             _context.SaveChanges();
 
@@ -72,9 +81,30 @@ namespace KooliProjekt.IntegrationTests
         public async Task Create_should_save_new_panel_material()
         {
             // Arrange
-            var formValues = new Dictionary<string, string>();
-            formValues.Add("Id", "0");
-            formValues.Add("Title", "Test Panel Material");
+            // Create and save a new Panel object
+            var panel = new Panel
+            {
+                Title = "Test Panel"  // Provide necessary properties for Panel
+            };
+            _context.Panel.Add(panel);
+
+            // Create and save a new Material object
+            var material = new Material
+            {
+                Title = "Test Material",  // Provide necessary properties for Material
+                UnitPrice = 10.0m       // Provide a unit price or any other needed properties
+            };
+            _context.Material.Add(material);
+            await _context.SaveChangesAsync();
+
+            // Prepare form values for the PanelMaterial to create
+            var formValues = new Dictionary<string, string>
+            {
+            { "Id", "0" },
+            { "Title", "Test Panel Material" },
+            { "PanelId", panel.Id.ToString() },  // Link to the created Panel
+            { "MaterialId", material.Id.ToString() }  // Link to the created Material
+            };
 
             using var content = new FormUrlEncodedContent(formValues);
 
@@ -90,14 +120,17 @@ namespace KooliProjekt.IntegrationTests
             Assert.NotNull(panelMaterial);
             Assert.NotEqual(0, panelMaterial.Id);
             Assert.Equal("Test Panel Material", panelMaterial.Title);
+            Assert.Equal(panel.Id, panelMaterial.PanelId);  // Ensure the correct Panel is linked
+            Assert.Equal(material.Id, panelMaterial.MaterialId);
         }
+ 
 
         [Fact]
         public async Task Create_should_not_save_invalid_new_panel_material()
         {
             // Arrange
             var formValues = new Dictionary<string, string>();
-            formValues.Add("Title", "");  // Empty Title
+            formValues.Add("UnitPrice", "");  
 
             using var content = new FormUrlEncodedContent(formValues);
 

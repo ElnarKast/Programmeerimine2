@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -95,18 +96,33 @@ namespace KooliProjekt.IntegrationTests
         [Fact]
         public async Task Create_should_not_save_invalid_new_service()
         {
-            // Arrange
-            var formValues = new Dictionary<string, string>();
-            formValues.Add("Title", "");  // Empty Title
+            // Arrange:
+            // Step 1: Create and save a new Building
+            var building = new Building { Title = "Test Building", Date = DateTime.Now };
+            _context.Building.Add(building);
+            await _context.SaveChangesAsync(); // Save to get the building's ID
+
+            // Step 2: Prepare form values with an empty Title for the Service (invalid input)
+            var formValues = new Dictionary<string, string>
+            {
+            { "Title", "" },  // Empty Title (invalid)'
+            { "Price", "" },  // Empty Title (invalid)
+            { "BuildingId", building.Id.ToString() }  // Add the BuildingId to the form values
+            };
 
             using var content = new FormUrlEncodedContent(formValues);
 
-            // Act
+            // Act:
+            // Step 3: Post the form to create a new Service
             using var response = await _client.PostAsync("/Services/Create", content);
 
-            // Assert
+            // Assert:
             response.EnsureSuccessStatusCode();
-            Assert.False(_context.Service.Any());
+
+            // Step 4: Ensure no new Service was added to the database
+            Assert.False(_context.Service.Any(), "A new service was added when the title was empty.");
         }
+
+
     }
 }

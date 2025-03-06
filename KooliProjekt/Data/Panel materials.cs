@@ -1,4 +1,6 @@
-﻿namespace KooliProjekt.Data
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace KooliProjekt.Data
 {
     public class PanelMaterial
     {
