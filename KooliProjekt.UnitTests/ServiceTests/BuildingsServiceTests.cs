@@ -17,7 +17,11 @@ namespace KooliProjekt.UnitTests.ServiceTests
         public async Task Delete_should_remove_existing_list()
         {
             // Arrange
-            var list = new Building { Title = "Test" };
+            var list = new Building
+            {
+                Title = "Test",
+                Date = DateTime.UtcNow // Set the Date property
+            };
             DbContext.Building.Add(list);
             DbContext.SaveChanges();
 
@@ -28,6 +32,7 @@ namespace KooliProjekt.UnitTests.ServiceTests
             var count = DbContext.Building.Count();
             Assert.Equal(0, count);
         }
+
 
         [Fact]
         public async Task Delete_should_return_if_list_was_not_found()

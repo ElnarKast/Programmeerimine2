@@ -58,16 +58,21 @@ namespace KooliProjekt.IntegrationTests
         public async Task Details_should_return_ok_when_service_found()
         {
             // Arrange
-            var service = new Service { Title = "Service 1" };  // Changed 'list' to 'service'
-            _context.Service.Add(service);
-            _context.SaveChanges();
+            var building = new Building { Title = "Building 1" }; // Create a new building
+            _context.Building.Add(building); // Add the building to the context
+            _context.SaveChanges(); // Save the building to the database
+
+            var service = new Service { Title = "Service 1", BuildingId = building.Id }; // Link the service to the building
+            _context.Service.Add(service); // Add the service to the context
+            _context.SaveChanges(); // Save the service to the database
 
             // Act
-            using var response = await _client.GetAsync("/Services/Details/" + service.Id);
+            using var response = await _client.GetAsync("/Services/Details/" + service.Building);
 
             // Assert
             response.EnsureSuccessStatusCode();
         }
+
 
         [Fact]
         public async Task Create_should_save_new_service()
