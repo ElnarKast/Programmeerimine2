@@ -2,8 +2,9 @@
 {
     public interface IApiClient
     {
-        Task<IList<Building>> List();
-        Task Save(Building list);
-        Task Delete(int id);
+    {
+        Task<Result> Save(Building building);
+        Task<Result> Delete(int id);
+        Task<Result<List<Building>>> List();
     }
 }

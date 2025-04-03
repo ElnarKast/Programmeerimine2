@@ -1,20 +1,20 @@
-﻿using KooliProjekt.WpfApp.Api;
+﻿using System;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using System.Windows.Input;
-
-namespace KooliProjekt.WpfApp
+using KooliProjekt.WpfApp.Api;
 {
     public class MainWindowViewModel : NotifyPropertyChangedBase
     {
-        private readonly IApiClient _apiClient;
 
         public ObservableCollection<Building> Lists { get; private set; }
-
         public ICommand NewCommand { get; private set; }
-
         public ICommand SaveCommand { get; private set; }
         public ICommand DeleteCommand { get; private set; }
         public Predicate<Building> ConfirmDelete { get; set; }
+        public Action<string> OnError { get; set; }
+
+        private readonly IApiClient _apiClient;
 
         public MainWindowViewModel() : this(new ApiClient())
         {
@@ -23,75 +23,79 @@ namespace KooliProjekt.WpfApp
         public MainWindowViewModel(IApiClient apiClient)
         {
             _apiClient = apiClient;
-
             Lists = new ObservableCollection<Building>();
 
             NewCommand = new RelayCommand<Building>(
-                // Execute
-                list =>
-                {
-                    SelectedItem = new Building();
-                }
+                list => SelectedItem = new Building()
             );
 
             SaveCommand = new RelayCommand<Building>(
-                // Execute
-                async list =>
-                {
-                    await _apiClient.Save(SelectedItem);
-                    await Load();
-                },
-                // CanExecute
-                list =>
-                {
-                    return SelectedItem != null;
-                }
+                async list => await Save(),
+                list => SelectedItem != null
             );
 
             DeleteCommand = new RelayCommand<Building>(
-                // Execute
-                async list =>
-                {
-                    if (ConfirmDelete != null)
-                    {
-                        var result = ConfirmDelete(SelectedItem);
-                        if (!result)
-                        {
-                            return;
-                        }
-                    }
-
-                    await _apiClient.Delete(SelectedItem.Id);
-                    Lists.Remove(SelectedItem);
-                    SelectedItem = null;
-                },
-                // CanExecute
-                list =>
-                {
-                    return SelectedItem != null;
-                }
+                 async list => await Delete(),
+                 list => SelectedItem != null
             );
         }
 
         public async Task Load()
         {
             Lists.Clear();
+            var result = await _apiClient.List();
 
-            var lists = await _apiClient.List();
-            foreach (var list in lists)
+        if (result.HasError)
+        {
+            OnError?.Invoke(result.Error);  // Показываем ошибку в UI
+            return;
+        }
+
+            foreach (var list in result.Value)
             {
-                Lists.Add(list);
+                    Lists.Add(list);
             }
         }
 
-        private Building _selectedItem;
-        public Building SelectedItem
+    private async Task Save()
+    {
+        if (SelectedItem == null) return;
+
+        var result = await _apiClient.Save(SelectedItem);
+
+        if (result.HasError)
         {
-            get
-            {
-                return _selectedItem;
-            }
-            set
+            OnError?.Invoke(result.Error);
+            return;
+        }
+
+        await Load();
+    }
+
+    private async Task Delete()
+    {
+        if (SelectedItem == null) return;
+
+        if (ConfirmDelete != null && !ConfirmDelete(SelectedItem))
+            return;
+
+        var result = await _apiClient.Delete(SelectedItem.Id);
+
+        if (result.HasError)
+        {
+            OnError?.Invoke(result.Error);
+            return;
+        }
+
+        Lists.Remove(SelectedItem);
+        SelectedItem = null;
+    }
+
+    private Category _selectedItem;
+    public Category SelectedItem
+    {
+        get => _selectedItem;
+        set
             {
                 _selectedItem = value;
                 NotifyPropertyChanged();

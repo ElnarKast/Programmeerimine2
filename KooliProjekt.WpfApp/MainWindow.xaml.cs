@@ -19,20 +19,37 @@ namespace KooliProjekt.WpfApp
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             var viewModel = new MainWindowViewModel(new ApiClient());
+
+
+            // Устанавливаем обработку ошибок
+            viewModel.OnError = error =>
+            {
+                MessageBox.Show(
+                    error,
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error
+                );
+            };
+
             viewModel.ConfirmDelete = list =>
             {
                 var result = MessageBox.Show(
-                    "Are you sure you want to delete selected list?",
-                    "Delete list",
-                    MessageBoxButton.YesNo
-                    );
-
+                "Are you sure you want to delete selected item?",
+                 "Delete list",
+                 MessageBoxButton.YesNo,
+                 MessageBoxImage.Warning
+             );
                 return result == MessageBoxResult.Yes;
             };
 
             DataContext = viewModel;
 
             await viewModel.Load();
+        }
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
         }
     }
 }
