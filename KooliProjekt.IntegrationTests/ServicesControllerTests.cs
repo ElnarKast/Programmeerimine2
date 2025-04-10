@@ -25,7 +25,7 @@ namespace KooliProjekt.IntegrationTests
         }
 
         [Fact]
-        public async Task Index_should_return_correct_response()
+        public async Task Index_should_return_sucess()
         {
             // Act
             using var response = await _client.GetAsync("/Services");
@@ -35,7 +35,7 @@ namespace KooliProjekt.IntegrationTests
         }
 
         [Fact]
-        public async Task Details_should_return_notfound_when_service_not_found()
+        public async Task Details_should_return_notfound_when_list_was_not_found()
         {
             // Act
             using var response = await _client.GetAsync("/Services/Details/100");
@@ -55,7 +55,7 @@ namespace KooliProjekt.IntegrationTests
         }
 
         [Fact]
-        public async Task Details_should_return_ok_when_service_found()
+        public async Task Details_should_return_success_when_list_was_found()
         {
             // Arrange
             var building = new Building { Title = "Building 1" }; // Create a new building

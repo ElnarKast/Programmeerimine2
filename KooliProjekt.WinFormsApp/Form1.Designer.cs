@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            BuildingsGrid = new DataGridView();
+            BuildingGrid = new DataGridView();
             IdLabel = new Label();
             IdField = new TextBox();
             TitleLabel = new Label();
@@ -36,18 +36,22 @@
             NewButton = new Button();
             SaveButton = new Button();
             DeleteButton = new Button();
-            ((System.ComponentModel.ISupportInitialize)BuildingsGrid).BeginInit();
+            NameLabel = new Label();
+            NameField = new TextBox();
+            DescriptionLabel = new Label();
+            DescriptionField = new TextBox();
+            ((System.ComponentModel.ISupportInitialize)BuildingGrid).BeginInit();
             SuspendLayout();
             // 
-            // BuildingsGrid
+            // BuildingGrid
             // 
-            BuildingsGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            BuildingsGrid.Location = new Point(5, 6);
-            BuildingsGrid.MultiSelect = false;
-            BuildingsGrid.Name = "BuildingsGrid";
-            BuildingsGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            BuildingsGrid.Size = new Size(419, 432);
-            BuildingsGrid.TabIndex = 0;
+            BuildingGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            BuildingGrid.Location = new Point(5, 6);
+            BuildingGrid.MultiSelect = false;
+            BuildingGrid.Name = "BuildingGrid";
+            BuildingGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            BuildingGrid.Size = new Size(419, 432);
+            BuildingGrid.TabIndex = 0;
             // 
             // IdLabel
             // 
@@ -84,7 +88,7 @@
             // 
             // NewButton
             // 
-            NewButton.Location = new Point(522, 96);
+            NewButton.Location = new Point(525, 164);
             NewButton.Name = "NewButton";
             NewButton.Size = new Size(75, 23);
             NewButton.TabIndex = 5;
@@ -93,7 +97,7 @@
             // 
             // SaveButton
             // 
-            SaveButton.Location = new Point(603, 96);
+            SaveButton.Location = new Point(606, 164);
             SaveButton.Name = "SaveButton";
             SaveButton.Size = new Size(75, 23);
             SaveButton.TabIndex = 6;
@@ -102,18 +106,55 @@
             // 
             // DeleteButton
             // 
-            DeleteButton.Location = new Point(684, 96);
+            DeleteButton.Location = new Point(687, 164);
             DeleteButton.Name = "DeleteButton";
             DeleteButton.Size = new Size(75, 23);
             DeleteButton.TabIndex = 7;
             DeleteButton.Text = "Delete";
             DeleteButton.UseVisualStyleBackColor = true;
             // 
+            // NameLabel
+            // 
+            NameLabel.AutoSize = true;
+            NameLabel.Location = new Point(460, 94);
+            NameLabel.Name = "NameLabel";
+            NameLabel.Size = new Size(42, 15);
+            NameLabel.TabIndex = 8;
+            NameLabel.Text = "Name:";
+            // 
+            // NameField
+            // 
+            NameField.Location = new Point(507, 86);
+            NameField.Name = "NameField";
+            NameField.Size = new Size(281, 23);
+            NameField.TabIndex = 9;
+            // 
+            // DescriptionLabel
+            // 
+            DescriptionLabel.AutoSize = true;
+            DescriptionLabel.Location = new Point(432, 125);
+            DescriptionLabel.Name = "DescriptionLabel";
+            DescriptionLabel.Size = new Size(70, 15);
+            DescriptionLabel.TabIndex = 10;
+            DescriptionLabel.Text = "Description:";
+
+            // 
+            // DescriptionField
+            // 
+            DescriptionField.Location = new Point(507, 122);
+            DescriptionField.Name = "DescriptionField";
+            DescriptionField.Size = new Size(281, 23);
+            DescriptionField.TabIndex = 11;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(DescriptionField);
+            Controls.Add(DescriptionLabel);
+            Controls.Add(NameField);
+            Controls.Add(NameLabel);
             Controls.Add(DeleteButton);
             Controls.Add(SaveButton);
             Controls.Add(NewButton);
@@ -121,17 +162,17 @@
             Controls.Add(TitleLabel);
             Controls.Add(IdField);
             Controls.Add(IdLabel);
-            Controls.Add(BuildingsGrid);
+            Controls.Add(BuildingGrid);
             Name = "Form1";
             Text = "Form1";
-            ((System.ComponentModel.ISupportInitialize)BuildingsGrid).EndInit();
+            ((System.ComponentModel.ISupportInitialize)BuildingGrid).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
 
-        private DataGridView BuildingsGrid;
+        private DataGridView BuildingGrid;
         private Label IdLabel;
         private TextBox IdField;
         private Label TitleLabel;
@@ -139,5 +180,9 @@
         private Button NewButton;
         private Button SaveButton;
         private Button DeleteButton;
+        private Label NameLabel;
+        private TextBox NameField;
+        private Label DescriptionLabel;
+        private TextBox DescriptionField;
     }
 }

@@ -9,7 +9,7 @@ namespace KooliProjekt.WinFormsApp
         {
             InitializeComponent();
 
-            BuildingsGrid.SelectionChanged += BuildingsGrid_SelectionChanged;
+            BuildingGrid.SelectionChanged += BuildingsGrid_SelectionChanged;
 
             NewButton.Click += NewButton_Click;
             SaveButton.Click += SaveButton_Click;
@@ -38,12 +38,12 @@ namespace KooliProjekt.WinFormsApp
 
         private void BuildingsGrid_SelectionChanged(object? sender, EventArgs e)
         {
-            if (BuildingsGrid.SelectedRows.Count == 0)
+            if (BuildingGrid.SelectedRows.Count == 0)
             {
                 return;
             }
 
-            var todoList = (Building)BuildingsGrid.SelectedRows[0].DataBoundItem;
+            var todoList = (Building)BuildingGrid.SelectedRows[0].DataBoundItem;
 
             if(todoList == null)
             {
@@ -64,8 +64,8 @@ namespace KooliProjekt.WinFormsApp
             var apiClient = new ApiClient();
             var response = await apiClient.List();
 
-            BuildingsGrid.AutoGenerateColumns = true;
-            BuildingsGrid.DataSource = response.Value;
+            BuildingGrid.AutoGenerateColumns = true;
+            BuildingGrid.DataSource = response.Value;
             
         }
     }
