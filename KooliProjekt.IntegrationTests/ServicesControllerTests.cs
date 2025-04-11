@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
 using KooliProjekt.Data;
 using KooliProjekt.IntegrationTests.Helpers;
@@ -55,19 +56,28 @@ namespace KooliProjekt.IntegrationTests
         }
 
         [Fact]
-        public async Task Details_should_return_success_when_list_was_found()
+        public async Task Details_should_return_success_when_service_was_found()
         {
             // Arrange
-            var building = new Building { Title = "Building 1" }; // Create a new building
-            _context.Building.Add(building); // Add the building to the context
-            _context.SaveChanges(); // Save the building to the database
+            var building = new Building
+            {
+                Title = "Test",
+                Date = new DateTime(),
+                Location = "Test Location"
+            };
+            var service = new Service
+            {
+                Title = "Test Service",
+                Price = 100, // Example valid price,
+                Building = building,
+            };
 
-            var service = new Service { Title = "Service 1", BuildingId = building.Id }; // Link the service to the building
-            _context.Service.Add(service); // Add the service to the context
-            _context.SaveChanges(); // Save the service to the database
+            // Add service and related entities to the in-memory context
+            _context.Service.Add(service);
+            _context.SaveChanges();
 
             // Act
-            using var response = await _client.GetAsync("/Services/Details/" + service.Building);
+            using var response = await _client.GetAsync($"/Services/Details/{service.Id}");
 
             // Assert
             response.EnsureSuccessStatusCode();
@@ -77,10 +87,21 @@ namespace KooliProjekt.IntegrationTests
         [Fact]
         public async Task Create_should_save_new_service()
         {
-            // Arrange
-            var formValues = new Dictionary<string, string>();
-            formValues.Add("Id", "0");
-            formValues.Add("Title", "Test Service");
+            var building = new Building
+            {
+                Title = "Test Building",
+                Date = DateTime.Now
+            };
+
+            _context.Building.Add(building);
+            _context.SaveChanges(); // Save to get an ID
+
+            var formValues = new Dictionary<string, string>
+        {
+            { "Id", "0" },
+            { "Title", "Test Service" },
+            { "BuildingId", building.Id.ToString() } // Associate service with building
+        };
 
             using var content = new FormUrlEncodedContent(formValues);
 
@@ -96,6 +117,7 @@ namespace KooliProjekt.IntegrationTests
             Assert.NotNull(service);
             Assert.NotEqual(0, service.Id);
             Assert.Equal("Test Service", service.Title);
+            Assert.Equal(building.Id, service.BuildingId);
         }
 
         [Fact]
