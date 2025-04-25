@@ -1,7 +1,69 @@
 ﻿@page "/"
+@using KooliProjekt.BlazorApp.Api
+@inject IApiClient apiClient
+@inject IJSRuntime JsRuntime
+@inject NavigationManager NavManager
 
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
 
-Welcome to your new app.
+<p>This component demonstrates fetching data from the server.</p>
+
+@if (Building == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <p><a class="btn btn-primary" href="/create">Add new</a></p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Title</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var Buildings in Building)
+            {
+                <tr>
+                    <td>@Buildings.Id</td>
+                    <td>@Buildings.Title</td>
+                    <td>@Buildings.Location</td>
+                    <td>@Buildings.Date</td>
+                    <td>
+                        <a href="/edit/@Buildings.Id" class="btn btn-primary">Edit</a>
+                        <button class="btn btn-primary" @onclick="() => Delete(Buildings.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code
+{
+    private IList<Building> Building;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await apiClient.List();
+
+        Building = result;
+    }
+
+    protected async Task Delete(int id)
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Are you sure?");
+        if (!confirmed)
+        {
+            return;
+        }
+
+        await apiClient.Delete(id);
+
+        NavManager.Refresh();
+    }
+}
