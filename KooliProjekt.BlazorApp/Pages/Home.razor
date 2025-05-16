@@ -26,16 +26,16 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var Buildings in Building)
+            @foreach (var BuildingPanels in Building)
             {
                 <tr>
-                    <td>@Buildings.Id</td>
-                    <td>@Buildings.Title</td>
-                    <td>@Buildings.Location</td>
-                    <td>@Buildings.Date</td>
+                    <td>@BuildingPanels.Id</td>
+                    <td>@BuildingPanels.Title</td>
+                    <td>@BuildingPanels.Location</td>
+                    <td>@BuildingPanels.Date</td>
                     <td>
-                        <a href="/edit/@Buildings.Id" class="btn btn-primary">Edit</a>
-                        <button class="btn btn-primary" @onclick="() => Delete(Buildings.Id)">Delete</button>
+                        <a href="/edit/@BuildingPanels.Id" class="btn btn-primary">Edit</a>
+                        <button class="btn btn-primary" @onclick="() => Delete(BuildingPanels.Id)">Delete</button>
                     </td>
                 </tr>
             }

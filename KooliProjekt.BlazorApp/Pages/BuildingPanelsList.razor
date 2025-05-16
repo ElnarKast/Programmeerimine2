@@ -1,0 +1,35 @@
+﻿@page "/buildingpanels"
+@inject IApiClient ApiClient
+
+<h3>Hoonete loend</h3>
+
+@if (panels == null)
+{
+    <p><em>Laen...</em></p>
+}
+else if (!panels.Any())
+{
+    <p>Andmeid ei leitud.</p>
+}
+else
+{
+    <ul>
+        @foreach (var BuildingPanel in panels)
+        {
+            <li>
+                @BuildingPanel.Title (@BuildingPanel)
+                [<a href="/BuildingPanels/edit/@BuildingPanel.Id">Muuda</a>]
+            </li>
+        }
+    </ul>
+    <a href="/BuildingPanels/edit">Lisa uus hoone</a>
+}
+
+@code {
+    private IList<KooliProjekt.BlazorApp.Api.BuildingPanels>? panels;
+
+    protected override async Task OnInitializedAsync()
+    {
+        panels = await ApiClient.ListBuildingPanels();
+    }
+}

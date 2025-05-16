@@ -8,6 +8,6 @@ namespace KooliProjekt.Services
         Task<PagedResult<Building>> List(int page, int pageSize, BuildingsSearch search);
         Task<Building> Get(int id);
         Task Save(Building list);
-        Task Delete(int id);
+        Task Delete(int id);        
     }
 }

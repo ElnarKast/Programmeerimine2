@@ -1,0 +1,42 @@
+﻿@page "/BuildingPanels/edit/{Id:int?}"
+@inject IApiClient ApiClient
+@inject NavigationManager NavigationManager
+
+<h3>@(building.Id == 0 ? "Lisa uus hoone" : "Muuda hoonet")</h3>
+
+<EditForm Model="@building" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>Nimi: </label>
+        <InputText @bind-Value="building.Title" class="form-control" />
+    </div>
+    <div>
+        <label>Aadress: </label>
+        <InputText @bind-Value="building.Location" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Salvesta</button>
+</EditForm>
+
+@code {
+    [Parameter] public int? Id { get; set; }
+
+    private Building building = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Id.HasValue)
+        {
+            var result = await ApiClient.Get(Id.Value);
+            if (result.Value != null)
+                building = result.Value;
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        await ApiClient.Save(building);
+        NavigationManager.NavigateTo("/BuildingPanels");
+    }
+}

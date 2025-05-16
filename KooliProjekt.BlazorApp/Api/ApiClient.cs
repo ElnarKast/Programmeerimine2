@@ -1,50 +1,76 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
+﻿using KooliProjekt.BlazorApp.Api;
 using System.Net.Http.Json;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace KooliProjekt.BlazorApp.Api
+public class ApiClient : IApiClient, IDisposable
 {
-    public class ApiClient : IApiClient, IDisposable
+    private readonly HttpClient _httpClient;
+
+    public ApiClient()
     {
-        private readonly HttpClient _httpClient;
+        _httpClient = new HttpClient();
+        _httpClient.BaseAddress = new Uri("https://localhost:7136/api/");
+    }
 
-        public ApiClient()
+    public async Task<IList<Building>> List()
+    {
+        var result = await _httpClient.GetFromJsonAsync<List<Building>>("Buildings"); // Работает, если GET /api/Buildings возвращает список
+        return result;
+    }
+
+    public async Task Save(Building building)
+    {
+        if (building.Id == 0)
         {
-            _httpClient = new HttpClient();
-            _httpClient.BaseAddress = new Uri("https://localhost:7136/api/Buildings/");
+            await _httpClient.PostAsJsonAsync("Buildings", building); // POST /api/Buildings
         }
-
-        public async Task<IList<Building>> List()
+        else
         {
-            var result = await _httpClient.GetFromJsonAsync<List<Building>>("");
-
-            return result;
+            await _httpClient.PutAsJsonAsync($"Buildings/{building.Id}", building); // PUT /api/Buildings/{id}
         }
+    }
 
-        public async Task Save(Building list)
+    public async Task Delete(int id)
+    {
+        await _httpClient.DeleteAsync($"Buildings/{id}"); // DELETE /api/Buildings/{id}
+    }
+
+    public async Task<Result<Building>> Get(int id)
+    {
+        var result = new Result<Building>();
+        try
         {
-            if(list.Id == 0)
-            {
-                await _httpClient.PostAsJsonAsync("", list);
-            }
-            else
-            {
-                await _httpClient.PutAsJsonAsync(list.Id.ToString(), list);
-            }
+            result.Value = await _httpClient.GetFromJsonAsync<Building>($"Buildings/ {id}"); // GET /api/Buildings/{id}
         }
-
-        public async Task Delete(int id)
+        catch (Exception ex)
         {
-            await _httpClient.DeleteAsync(id.ToString());
+            result.Error = ex.Message;
         }
+        return result;
+    }
 
-        public void Dispose()
+    public async Task<IList<BuildingPanels>> ListBuildingPanels()
+    {
+        var result = await _httpClient.GetFromJsonAsync<List<BuildingPanels>>("BuildingPanels"); // Работает, если GET /api/Buildings возвращает список
+        return result;
+    }
+
+    public async Task SaveBuildingPanel(BuildingPanels panels)
+    {
+        if (panels.Id == 0)
         {
-            _httpClient.Dispose();
+            await _httpClient.PostAsJsonAsync("BuildingPanels", panels); // POST /api/Buildings
         }
+        else
+        {
+            await _httpClient.PutAsJsonAsync($"BuildingPanels/{panels.Id}", panels); // PUT /api/Buildings/{id}
+        }
+    }
+    public async Task DeleteBuildingPanel(int id)
+    {
+        await _httpClient.DeleteAsync($"BuildingPanels/{id}"); // DELETE /api/Buildings/{id}
+    }
+    public void Dispose()
+    {
+        _httpClient.Dispose();
     }
 }
